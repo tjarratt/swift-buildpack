@@ -2,21 +2,56 @@
 
 set -ex
 
+CLANG_DEB_URL=http://llvm.org/apt/trusty/pool/main/l/llvm-toolchain-3.6/clang-3.6_3.6.2~svn240577-1~exp1_amd64.deb
+LIB_LLVM_DEB_URL=http://llvm.org/apt/trusty/pool/main/l/llvm-toolchain-3.6/libllvm3.6_3.6.2~svn240577-1~exp1_amd64.deb
+
 BIN_DIR=$(dirname $0)
 ROOT_DIR=$(dirname $BIN_DIR)
 VENDOR_DIR=$ROOT_DIR/vendor
-
-echo "args are $0 ... $1"
-
-echo "checking the environment we are running under"
-echo $(uname -a)
-echo ""
+TMP_DIR=$ROOT_DIR/tmp
+mkdir $TMP_DIR
 
 echo "extracting swift toolchain"
 pushd $VENDOR_DIR
 tar -xzf swift-2.2.tar.gz
 export PATH=$(pwd)/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu14.04/usr/bin:$PATH
 popd
+
+echo "installing clang 3.6"
+pushd $TMP_DIR
+curl $CLANG_DEB_URL -o clang-3.6.deb > /dev/null
+dpkg-deb -x clang-3.6.deb clang-release
+
+pushd clang-release/usr/bin
+for file in $PWD/*
+do
+  if [ -d $file ]
+  then
+    continue
+  fi
+
+  mv $file ${file/-3.6/}
+done
+popd
+
+PATH=$(pwd)/clang-release/usr/bin:$PATH
+
+popd
+
+echo "installing lib-llvm-3.6"
+pushd $TMP_DIR
+curl $LIB_LLVM_DEB_URL -o llvm-3.6.deb > /dev/null
+dpkg-deb -x llvm-3.6.deb llvm-release
+
+find llvm-release
+
+# ldconfig -n llvm-release/usr/lib/x86_64-linux-gnu
+echo "looking for shared libraries"
+ls -als /usr/lib
+
+popd
+
+LD_LIBRARY_PATH=$TMP_DIR/llvm-release/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
 
 echo "COMPILE ALL THE THINGS!"
 pushd $1
