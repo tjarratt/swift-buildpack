@@ -1,3 +1,14 @@
 #!/usr/bin/env bash
 
+set -ex
+
+echo "checking the environment we are running under"
 echo $(uname -a)
+echo ""
+
+pushd $0/../../vendor
+tar -xzvf swift-2.2.tar.gz
+export PATH=$(pwd)/usr/bin:$PATH
+popd
+
+swiftc */*.swift
