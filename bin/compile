@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -ex
+
 BIN_DIR=$(dirname $0)
 ROOT_DIR=$(dirname $BIN_DIR)
 VENDOR_DIR=$ROOT_DIR/vendor
