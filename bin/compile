@@ -1,14 +1,23 @@
 #!/usr/bin/env bash
 
-set -ex
+BIN_DIR=$(dirname $0)
+ROOT_DIR=$(dirname $BIN_DIR)
+VENDOR_DIR=$ROOT_DIR/vendor
+
+echo "args are $0 ... $1"
 
 echo "checking the environment we are running under"
 echo $(uname -a)
 echo ""
 
-pushd $0/../../vendor
-tar -xzvf swift-2.2.tar.gz
-export PATH=$(pwd)/usr/bin:$PATH
+echo "extracting swift toolchain"
+pushd $VENDOR_DIR
+tar -xzf swift-2.2.tar.gz
+export PATH=$(pwd)/swift-2.2-SNAPSHOT-2015-12-01-b-ubuntu14.04/usr/bin:$PATH
 popd
 
-swiftc */*.swift
+echo "COMPILE ALL THE THINGS!"
+pushd $1
+swiftc */*.swift -v
+popd
+
