@@ -43,12 +43,14 @@ pushd $TMP_DIR
 curl $LIB_LLVM_DEB_URL -o llvm-3.6.deb > /dev/null
 dpkg-deb -x llvm-3.6.deb llvm-release
 
-find llvm-release
+echo "looking for ld.so.conf"
+cat /etc/ld.so.conf
+
+ls -lsa /usr/lib/x86_64-linux-gnu/libfakeroot
+cat /etc/ld.so.conf.d/*
 
 # ldconfig -n llvm-release/usr/lib/x86_64-linux-gnu
-echo "looking for shared libraries"
-ls -als /usr/lib
-
+cp llvm-release/usr/lib/x86_64-linux-gnu/libLLVM-3.6.so.1 /usr/lib/x86_64-linux_gnu/libLLVM-3.6.so.1
 popd
 
 LD_LIBRARY_PATH=$TMP_DIR/llvm-release/usr/lib/x86_64-linux-gnu/:$LD_LIBRARY_PATH
