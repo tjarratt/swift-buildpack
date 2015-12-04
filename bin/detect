@@ -1,0 +1,9 @@
+#!/usr/bin/env bash
+
+if [ $(find $1 -name *\.swift | wc -l) -gt 0 ]; then
+  echo "It's server side swift!"
+  exit 0
+else
+  echo "nope"
+  exit 1
+fi
